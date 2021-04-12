@@ -1,11 +1,11 @@
-from flask import Flask
+from flask import Flask,render_template
 app = Flask(__name__)
 
 @app.route("/")
 def hello():
-    return "Hello World!"
+    return "Hello"
 
-@app.route("/harry")
+@app.route("/index")
 def harry():
-    return "Hello harry bhai4!"
+    return render_template('/templates/index.html')
 app.run(debug=True)
