@@ -9,3 +9,8 @@ def hello():
 def harry():
     return render_template('index.html')
 app.run(debug=True)
+
+@app.route("/about")
+def about():
+    name='Rahul'
+    return render_template('about.html',name2=name)
