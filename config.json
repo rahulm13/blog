@@ -1,0 +1,1 @@
+{"params": {"local_server": true, "local_uri": "sqlite:///contacts.sqlite3", "fb_url": "https://facebook.com", "twitter_url": "https://twitter.com", "gh_url": "https://github.com"}}
