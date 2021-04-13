@@ -38,17 +38,28 @@ class Posts(db.Model):
     content = db.Column(db.String(120), nullable=False)
     date = db.Column(db.String(12), nullable=True)
     img_file = db.Column(db.String(12), nullable=True)
+    tagline = db.Column(db.String(120), nullable=False)
 
 
 
+# @app.route("/")
+# def home():
+#     return render_template('index.html',params=parameters)
+#adding functionality to get top 3 posts
 @app.route("/")
 def home():
-    return render_template('index.html',params=parameters)
+    posts = Posts.query.filter_by().all()[0:parameters['no_of_posts']]
+    return render_template('index.html', params=parameters, posts=posts)
 
 
 @app.route("/about")
 def about():
     return render_template('about.html',params=parameters)
+
+@app.route("/dashboard")
+def dashboard():
+    return render_template('login.html',params=parameters)
+
 
 
 @app.route("/contact", methods = ['GET', 'POST'])
@@ -82,9 +93,13 @@ def post_route(post_slug):
     return render_template('post.html',params=parameters,post=post)
 #creates both database tables
 db.create_all()
-firstpost=Posts(title="This is first post",slug="firstpost",content="chalja bhai",img_file='about-bg.jpg')
+firstpost=Posts(title="This is first post",slug="firstpost",content="chalja bhai",img_file='about-bg.jpg',tagline='tag1')
 firstpost.date=date = datetime.now()
 db.session.add(firstpost)
+secondpost=Posts(title="This is second post",slug="second-post",content="cool bro",img_file='about-bg.jpg',tagline='tag2')
+thirdpost=Posts(title="This is third post",slug="third-post",content="yeah bro",img_file='about-bg.jpg',tagline='tag3')
+db.session.add(secondpost)
+db.session.add(thirdpost)
 db.session.commit()
 app.run(debug=True)
 
