@@ -1,9 +1,15 @@
+#video to add multiple databases
 from flask import Flask, render_template, request
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
+from flask_mail import Mail
+from datetime import datetime
+
+
 
 app = Flask(__name__)
 app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contacts.sqlite3'
+app.config['SQLALCHEMY_BINDS'] = {'two' : 'sqlite:///posts.sqlite3'}
 db = SQLAlchemy(app)
 
 import json
@@ -22,6 +28,18 @@ class Contacts(db.Model):
     msg = db.Column(db.String(120), nullable=False)
     date = db.Column(db.String(12), nullable=True)
     email = db.Column(db.String(20), nullable=False)
+
+
+class Posts(db.Model):
+    __bind_key__ = 'two'
+    sno = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(80), nullable=False)
+    slug = db.Column(db.String(21), nullable=False)
+    content = db.Column(db.String(120), nullable=False)
+    date = db.Column(db.String(12), nullable=True)
+    img_file = db.Column(db.String(12), nullable=True)
+
+
 
 @app.route("/")
 def home():
@@ -56,7 +74,18 @@ def view():
     return render_template("view.html",values=val,params=parameters)
     #return render_template("view.html",values=keys)
 
+#rule is to whatever is the variable you need to pass it to function
+@app.route("/post/<string:post_slug>",methods=["Get"])
+def post_route(post_slug):
+    post=Posts.query.filter_by(slug=post_slug).first()
+
+    return render_template('post.html',params=parameters,post=post)
+#creates both database tables
 db.create_all()
+firstpost=Posts(title="This is first post",slug="firstpost",content="chalja bhai",img_file='about-bg.jpg')
+firstpost.date=date = datetime.now()
+db.session.add(firstpost)
+db.session.commit()
 app.run(debug=True)
 
 
