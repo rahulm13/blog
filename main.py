@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_mail import Mail
 from datetime import datetime
+import os
+from werkzeug.utils import secure_filename
 
 
 
@@ -145,6 +147,19 @@ def edit(sno):
         post = Posts.query.filter_by(sno=sno).first()
         return render_template('edit.html', params=parameters, post=post,sno=sno)
 
+@app.route("/uploader",methods = ['GET', 'POST'])
+def uploader():
+    if "user" in session and session['user']== parameters['admin_user']:
+        if(request.method=='POST'):
+            f=request.files('myfile')
+            f.save(os.path.join(parameters["upload_loaction"],secure_filename(f.filename)))
+            return "uploaded succesfully"
+
+
+@app.route("/logout")
+def logout():
+    session.pop('user')
+    return redirect('/dashboard')
 
 #creates both database tables
 db.create_all()

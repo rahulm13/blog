@@ -29,7 +29,6 @@
         <button class="btn btn-primary float-center">Add a new post</button>
       </a>
       <hr>
-      <hr>
       <a href="/logout">
         <button class="btn btn-primary float-center">Logout</button>
       </a>
@@ -37,7 +36,14 @@
       <hr>
         <h1>Uplaod a file</h1>
         <hr>
+
+        <form action=/uploader method ="post" enctype="multipart/form-data">
+          <label for="myfile">Select a file:</label>
+          <input type="file" id="myfile" name="myfile"> 
+          <button class="btn btn-primary float-center">Submit</button>
+        </form>
         <h1>Edit Post</h1>
+        
         
 
 
