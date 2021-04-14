@@ -161,6 +161,17 @@ def logout():
     session.pop('user')
     return redirect('/dashboard')
 
+
+@app.route("/delete/<string:sno>" , methods=['GET', 'POST'])
+#always pass the argument like slug sno in the function
+def delete(sno):
+    if "user" in session and session['user']== parameters['admin_user']:
+        post=Posts.query.filter_by(sno=sno).first()
+        db.session.delete(post)
+        db.session.commit()
+        return redirect("/dashboard")
+
+
 #creates both database tables
 db.create_all()
 
