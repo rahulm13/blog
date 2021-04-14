@@ -6,6 +6,7 @@ from flask_mail import Mail
 from datetime import datetime
 import os
 from werkzeug.utils import secure_filename
+import math
 
 
 
@@ -49,10 +50,42 @@ class Posts(db.Model):
 # def home():
 #     return render_template('index.html',params=parameters)
 #adding functionality to get top 3 posts
+# @app.route("/")
+# def home():
+#     posts = Posts.query.filter_by().all()[0:parameters['no_of_posts']]
+#     return render_template('index.html', params=parameters, posts=posts)
+
+
+
 @app.route("/")
 def home():
-    posts = Posts.query.filter_by().all()[0:parameters['no_of_posts']]
-    return render_template('index.html', params=parameters, posts=posts)
+    posts = Posts.query.filter_by().all()
+    last=int(math.ceil(len(posts)/int(parameters['no_of_posts'])))
+
+    page=request.args.get('page')
+    if(not str(page).isnumeric()):
+        page=1
+    page=int(page)
+    posts=posts[(page-1)*int(parameters['no_of_posts']):(page-1)*int(parameters['no_of_posts'])+int(parameters['no_of_posts'])]
+
+
+    if (page==1):
+        prev="#"
+        next="/?page="+str(page+1)
+
+    elif(page==last):
+        next="#"
+        prev="/?page="+str(page-1)
+
+    else:
+        prev="/?page="+str(page-1)
+        next="/?page="+str(page+1)
+
+
+
+   
+    return render_template('index.html', params=parameters, posts=posts,prev=prev,next=next)
+
 
 
 @app.route("/about")
@@ -76,6 +109,8 @@ def dashboard():
             posts=Posts.query.all()
             return render_template("dashboard.html",params=parameters,posts=posts)
             #return render_template("contact.html",params=parameters)
+        else:
+            return render_template("login.html", params=parameters)
             
     else:
         return render_template("login.html", params=parameters)
