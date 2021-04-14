@@ -1,5 +1,5 @@
 #video to add multiple databases
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_mail import Mail
@@ -11,6 +11,7 @@ app = Flask(__name__)
 app.config ['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///contacts.sqlite3'
 app.config['SQLALCHEMY_BINDS'] = {'two' : 'sqlite:///posts.sqlite3'}
 db = SQLAlchemy(app)
+app.secret_key = 'super-secret-key'
 
 import json
 with open('config.json','r') as c:
@@ -56,9 +57,26 @@ def home():
 def about():
     return render_template('about.html',params=parameters)
 
-@app.route("/dashboard")
+@app.route("/dashboard",methods = ['GET', 'POST'])
 def dashboard():
-    return render_template('login.html',params=parameters)
+#user already logged in 
+    if "user" in session and session['user']==parameters['admin_user']:
+        posts=Posts.query.all()
+        return render_template("dashboard.html",params=parameters,posts=posts)
+       # return render_template("contact.html",params=parameters)
+    #print(request.method)
+    if request.method=="POST":
+        username = request.form.get("uname")
+        userpass = request.form.get("pass")
+        if username==parameters['admin_user'] and userpass==parameters['admin_password']:
+            # set the session variable
+            session['user']=username
+            posts=Posts.query.all()
+            return render_template("dashboard.html",params=parameters,posts=posts)
+            #return render_template("contact.html",params=parameters)
+            
+    else:
+        return render_template("login.html", params=parameters)
 
 
 
