@@ -1,5 +1,5 @@
 #video to add multiple databases
-from flask import Flask, render_template, request,session
+from flask import Flask, render_template, request,session,redirect
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from flask_mail import Mail
@@ -109,16 +109,55 @@ def post_route(post_slug):
     post=Posts.query.filter_by(slug=post_slug).first()
 
     return render_template('post.html',params=parameters,post=post)
+
+
+
+@app.route("/edit/<string:sno>" , methods=['GET', 'POST'])
+#always pass the argument like slug sno in the function
+def edit(sno):
+    if "user" in session and session['user']==parameters['admin_user']:
+        if(request.method=='POST'):
+            box_title = request.form.get('title')
+            tline = request.form.get('tline')
+            slug = request.form.get('slug')
+            content = request.form.get('content')
+            img_file = request.form.get('img_file')
+            date = datetime.now()
+
+            if sno=='0':
+                post = Posts(title=box_title, slug=slug, content=content, tagline=tline, img_file=img_file, date=date)
+                db.session.add(post)
+                db.session.commit()
+                return redirect('/dashboard')
+                
+            else:
+                post = Posts.query.filter_by(sno=sno).first()
+                post.title = box_title
+                post.tline = tline
+                post.slug = slug
+                post.content = content
+                post.img_file = img_file
+                post.date = date
+                db.session.commit()
+                return redirect('/edit/'+sno)
+                #return redirect(/dashboard)
+
+        post = Posts.query.filter_by(sno=sno).first()
+        return render_template('edit.html', params=parameters, post=post,sno=sno)
+
+
 #creates both database tables
 db.create_all()
-firstpost=Posts(title="This is first post",slug="firstpost",content="chalja bhai",img_file='about-bg.jpg',tagline='tag1')
-firstpost.date=date = datetime.now()
-db.session.add(firstpost)
-secondpost=Posts(title="This is second post",slug="second-post",content="cool bro",img_file='about-bg.jpg',tagline='tag2')
-thirdpost=Posts(title="This is third post",slug="third-post",content="yeah bro",img_file='about-bg.jpg',tagline='tag3')
-db.session.add(secondpost)
-db.session.add(thirdpost)
-db.session.commit()
+
+firstpost=Posts(title="This is first post",slug="firstpost",content="chalja bhai",img_file='about-bg.jpg',tagline='tag1',date = datetime.now())
+secondpost=Posts(title="This is second post",slug="second-post",content="cool bro",img_file='about-bg.jpg',tagline='tag2',date = datetime.now())
+thirdpost=Posts(title="This is third post",slug="third-post",content="yeah bro",img_file='about-bg.jpg',tagline='tag3',date = datetime.now())
+
+# db.session.add(firstpost)
+# db.session.add(secondpost)
+# db.session.add(thirdpost)
+# db.session.commit()
+
 app.run(debug=True)
 
 
