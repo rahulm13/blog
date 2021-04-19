@@ -92,6 +92,9 @@ def home():
 def about():
     return render_template('about.html',params=parameters)
 
+
+
+
 @app.route("/dashboard",methods = ['GET', 'POST'])
 def dashboard():
 #user already logged in 
@@ -166,6 +169,7 @@ def edit(sno):
                 db.session.add(post)
                 db.session.commit()
                 return redirect('/dashboard')
+                #return redirect('/table')
                 
             else:
                 post = Posts.query.filter_by(sno=sno).first()
@@ -177,7 +181,7 @@ def edit(sno):
                 post.date = date
                 db.session.commit()
                 return redirect('/edit/'+sno)
-                #return redirect(/dashboard)
+                #return redirect(/table)
 
         post = Posts.query.filter_by(sno=sno).first()
         return render_template('edit.html', params=parameters, post=post,sno=sno)
